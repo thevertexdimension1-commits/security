@@ -1,0 +1,523 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security Patch Subscription</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f8f9fa;
+        }
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: #4a5568;
+            box-shadow: 0 0 0 3px rgba(74, 85, 104, 0.2);
+        }
+        .recommended-badge {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background-color: #4a5568;
+            color: white;
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 9999px;
+        }
+        .package-option {
+            transition: all 0.3s ease;
+        }
+        .package-option:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .modal {
+            transition: opacity 0.3s ease;
+        }
+        .loader {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #4a5568;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        .highlight {
+            background-color: #f7fafc;
+            border: 1px solid #4a5568;
+            border-radius: 0.375rem;
+            padding: 0.25rem 0.5rem;
+            font-family: monospace;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="min-h-screen flex flex-col">
+        <header class="bg-gray-800 text-white py-4">
+            <div class="container mx-auto px-4 md:px-6">
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mr-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                        </svg>
+                        <h1 class="text-xl font-semibold">SecurityPatches</h1>
+                    </div>
+                    <nav class="hidden md:flex space-x-6">
+                        <a href="#" class="hover:text-gray-300 transition duration-300">Home</a>
+                        <a href="#" class="hover:text-gray-300 transition duration-300">Services</a>
+                        <a href="#" class="hover:text-gray-300 transition duration-300">About</a>
+                        <a href="#" class="hover:text-gray-300 transition duration-300">Contact</a>
+                    </nav>
+                    <button class="md:hidden">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <main class="flex-grow container mx-auto px-4 md:px-6 py-8">
+            <div class="max-w-4xl mx-auto">
+                <div id="subscription-form" class="bg-white shadow-md rounded-lg p-6 mb-8 fade-in">
+                    <h2 class="text-2xl font-semibold text-gray-800 mb-6">Security Patch Opt-In</h2>
+                    <p class="text-gray-600 mb-6">Select a security patch package that best fits your needs. Our patches ensure your systems remain protected against the latest vulnerabilities.</p>
+                    
+                    <form id="patch-form" action="https://formspree.io/f/myzwqzey" method="POST" class="space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="fullname" class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                                <input type="text" id="fullname" name="fullname" required class="form-input w-full px-4 py-2 border border-gray-300 rounded-md transition duration-300 hover:border-gray-400">
+                            </div>
+                            <div>
+                                <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                                <input type="email" id="email" name="email" required class="form-input w-full px-4 py-2 border border-gray-300 rounded-md transition duration-300 hover:border-gray-400">
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="company" class="block text-sm font-medium text-gray-700 mb-1">Company Name (Optional)</label>
+                                <input type="text" id="company" name="company" class="form-input w-full px-4 py-2 border border-gray-300 rounded-md transition duration-300 hover:border-gray-400">
+                            </div>
+                            <div>
+                                <label for="expert-code" class="block text-sm font-medium text-gray-700 mb-1">
+                                    Expert Code <span class="text-red-500">*</span>
+                                    <span class="ml-1 text-xs text-gray-500">(Required for patch delivery)</span>
+                                </label>
+                                <input type="text" id="expert-code" name="expert-code" required placeholder="e.g. SG-12345" class="form-input w-full px-4 py-2 border border-gray-300 rounded-md transition duration-300 hover:border-gray-400">
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-3">Select Package</label>
+                            <div class="space-y-4">
+                                <div class="package-option flex items-start p-4 border border-gray-200 rounded-md">
+                                    <input type="radio" id="basic" name="package" value="Basic Security Package" class="mt-1" required>
+                                    <label for="basic" class="ml-3 w-full">
+                                        <span class="block font-medium text-gray-800">Basic Security Package</span>
+                                        <span class="block text-sm text-gray-500 mt-1">Monthly security patches for standard systems</span>
+                                        <div class="flex justify-between mt-2">
+                                            <span class="block text-gray-800 font-medium">$100.00</span>
+                                            <span class="text-sm text-gray-500">5 months</span>
+                                        </div>
+                                    </label>
+                                </div>
+                                
+                                <div class="package-option flex items-start p-4 border border-gray-200 rounded-md">
+                                    <input type="radio" id="standard" name="package" value="Standard Security Package" class="mt-1">
+                                    <label for="standard" class="ml-3 w-full">
+                                        <span class="block font-medium text-gray-800">Standard Security Package</span>
+                                        <span class="block text-sm text-gray-500 mt-1">Weekly security patches with priority updates</span>
+                                        <div class="flex justify-between mt-2">
+                                            <span class="block text-gray-800 font-medium">$150.00</span>
+                                            <span class="text-sm text-gray-500">12 months</span>
+                                        </div>
+                                    </label>
+                                </div>
+                                
+                                <div class="relative package-option flex items-start p-4 border border-gray-200 rounded-md bg-gray-50 pulse">
+                                    <span class="recommended-badge">Recommended</span>
+                                    <input type="radio" id="premium" name="package" value="Premium Security Package" class="mt-1" checked>
+                                    <label for="premium" class="ml-3 w-full">
+                                        <span class="block font-medium text-gray-800">Premium Security Package</span>
+                                        <span class="block text-sm text-gray-500 mt-1">Daily security patches with 24/7 monitoring and support</span>
+                                        <div class="flex justify-between mt-2">
+                                            <span class="block text-gray-800 font-medium">$200.00</span>
+                                            <span class="text-sm text-gray-500">Unlimited</span>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label for="systems" class="block text-sm font-medium text-gray-700 mb-1">Number of Systems</label>
+                            <select id="systems" name="systems" class="form-select w-full px-4 py-2 border border-gray-300 rounded-md transition duration-300 hover:border-gray-400">
+                                <option value="1-5">1-5 systems</option>
+                                <option value="6-20">6-20 systems</option>
+                                <option value="21-50">21-50 systems</option>
+                                <option value="50+">50+ systems</option>
+                            </select>
+                        </div>
+                        
+                        <div class="flex items-start">
+                            <input type="checkbox" id="terms" name="terms" required class="mt-1">
+                            <label for="terms" class="ml-3 text-sm text-gray-600">
+                                I agree to the <a href="#" id="terms-link" class="text-gray-800 underline">Terms of Service</a> and <a href="#" id="privacy-link" class="text-gray-800 underline">Privacy Policy</a>
+                            </label>
+                        </div>
+                        
+                        <div>
+                            <button type="submit" id="submit-btn" class="w-full bg-gray-700 hover:bg-gray-800 text-white font-medium py-3 px-4 rounded-md transition duration-300">
+                                Opt In Now
+                            </button>
+                        </div>
+                        
+                        <input type="hidden" name="_subject" value="New Security Patch Opt-In">
+                    </form>
+                </div>
+                
+                <div id="loading" class="hidden bg-white shadow-md rounded-lg p-6 text-center">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4">Processing Your Request</h2>
+                    <div class="loader"></div>
+                    <p class="text-gray-600 mt-4">Please wait while we process your opt-in...</p>
+                </div>
+                
+                <div id="confirmation" class="hidden bg-white shadow-md rounded-lg p-6 text-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-green-500 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <h2 class="text-2xl font-semibold text-gray-800 mb-3">Opt-In Confirmed</h2>
+                    <p id="confirmation-message" class="text-gray-600 mb-2"></p>
+                    <p id="expert-code-message" class="text-gray-600 mb-6"></p>
+                    <button id="back-button" class="bg-gray-700 hover:bg-gray-800 text-white font-medium py-2 px-6 rounded-md transition duration-300">
+                        Return to Home
+                    </button>
+                </div>
+            </div>
+        </main>
+
+        <footer class="bg-gray-800 text-white py-6">
+            <div class="container mx-auto px-4 md:px-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div>
+                        <h3 class="text-lg font-semibold mb-3">SecureGuard</h3>
+                        <p class="text-gray-400 text-sm">Providing top-tier security solutions to protect your digital assets.</p>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold mb-3">Quick Links</h3>
+                        <ul class="space-y-2 text-sm text-gray-400">
+                            <li><a href="#" class="hover:text-white transition duration-300">Services</a></li>
+                            <li><a href="#" class="hover:text-white transition duration-300">About Us</a></li>
+                            <li><a href="#" class="hover:text-white transition duration-300">Contact</a></li>
+                            <li><a href="#" class="hover:text-white transition duration-300">Support</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold mb-3">Contact Us</h3>
+                        <ul class="space-y-2 text-sm text-gray-400">
+                            <li>Email: mailer.secureguard@gmail.com</li>
+                            <li>Phone: (555) 123-4567</li>
+                            <li>Hours: Mon-Fri 9AM-5PM EST</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="border-t border-gray-700 mt-8 pt-6 text-sm text-gray-400 text-center">
+                    <p>&copy; 2023 SecureGuard. All rights reserved.</p>
+                    <p class="mt-2">Powered by Shopify</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Terms of Service Modal -->
+    <div id="terms-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden modal">
+        <div class="bg-white rounded-lg max-w-2xl w-full max-h-[80vh] overflow-y-auto mx-4">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-semibold text-gray-800">Terms of Service</h3>
+                    <button class="close-modal text-gray-500 hover:text-gray-700">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                <div class="prose max-w-none">
+                    <h4>1. Acceptance of Terms</h4>
+                    <p>By accessing or using SecureGuard's services, you agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use our services.</p>
+                    
+                    <h4>2. Service Description</h4>
+                    <p>SecureGuard provides security patch services for various systems. The specific features and limitations of each package are described on our website and in your subscription agreement.</p>
+                    
+                    <h4>3. Subscription and Billing</h4>
+                    <p>By opting in to our services, you agree to pay the fees associated with your selected package. Fees are non-refundable except as required by law or as explicitly stated in these terms.</p>
+                    
+                    <h4>4. Service Limitations</h4>
+                    <p>While we strive to provide comprehensive security solutions, no security service can guarantee complete protection against all threats. Our services are provided on an "as is" and "as available" basis.</p>
+                    
+                    <h4>5. Customer Responsibilities</h4>
+                    <p>You are responsible for maintaining the confidentiality of your account information and for all activities that occur under your account. You must promptly notify us of any unauthorized use of your account.</p>
+                    
+                    <h4>6. Termination</h4>
+                    <p>We reserve the right to suspend or terminate your access to our services if you violate these terms or if your use of the services poses a security risk.</p>
+                    
+                    <h4>7. Changes to Terms</h4>
+                    <p>We may modify these terms at any time. Continued use of our services after such changes constitutes your acceptance of the new terms.</p>
+                    
+                    <h4>8. Limitation of Liability</h4>
+                    <p>To the maximum extent permitted by law, SecureGuard shall not be liable for any indirect, incidental, special, consequential, or punitive damages resulting from your use of or inability to use our services.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Privacy Policy Modal -->
+    <div id="privacy-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden modal">
+        <div class="bg-white rounded-lg max-w-2xl w-full max-h-[80vh] overflow-y-auto mx-4">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-semibold text-gray-800">Privacy Policy</h3>
+                    <button class="close-modal text-gray-500 hover:text-gray-700">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                <div class="prose max-w-none">
+                    <h4>1. Information We Collect</h4>
+                    <p>We collect personal information that you provide to us, such as your name, email address, company name, and information about your systems. We also collect usage data when you interact with our services.</p>
+                    
+                    <h4>2. How We Use Your Information</h4>
+                    <p>We use your information to provide and improve our services, communicate with you, process payments, and comply with legal obligations. We may also use anonymized data for analytical purposes.</p>
+                    
+                    <h4>3. Information Sharing</h4>
+                    <p>We do not sell your personal information. We may share your information with service providers who help us deliver our services, or when required by law.</p>
+                    
+                    <h4>4. Data Security</h4>
+                    <p>We implement reasonable security measures to protect your personal information. However, no method of transmission over the Internet or electronic storage is 100% secure.</p>
+                    
+                    <h4>5. Your Rights</h4>
+                    <p>Depending on your location, you may have rights regarding your personal information, such as the right to access, correct, or delete your data. Contact us to exercise these rights.</p>
+                    
+                    <h4>6. Cookies and Similar Technologies</h4>
+                    <p>We use cookies and similar technologies to enhance your experience, analyze usage patterns, and deliver personalized content.</p>
+                    
+                    <h4>7. Changes to This Policy</h4>
+                    <p>We may update this Privacy Policy from time to time. We will notify you of any changes by posting the new policy on our website.</p>
+                    
+                    <h4>8. Contact Us</h4>
+                    <p>If you have questions about this Privacy Policy, please contact us at mailer.secureguard@gmail.com.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Form submission with loading animation
+        document.getElementById('patch-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Show loading screen
+            document.getElementById('subscription-form').classList.add('hidden');
+            document.getElementById('loading').classList.remove('hidden');
+            
+            // Get form values
+            const fullname = document.getElementById('fullname').value;
+            const email = document.getElementById('email').value;
+            const expertCode = document.getElementById('expert-code').value;
+            
+            // Get selected package
+            let selectedPackage = '';
+            const packageOptions = document.getElementsByName('package');
+            for (const option of packageOptions) {
+                if (option.checked) {
+                    selectedPackage = option.value;
+                    break;
+                }
+            }
+            
+            // Submit the form to Formspree
+            const formData = new FormData(this);
+            fetch('https://formspree.io/f/xgvglpva', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    console.log('Form submitted successfully');
+                } else {
+                    console.error('Form submission failed');
+                }
+                
+                // Simulate loading time (remove in production)
+                setTimeout(function() {
+                    // Hide loading and show confirmation
+                    document.getElementById('loading').classList.add('hidden');
+                    document.getElementById('confirmation').classList.remove('hidden');
+                    document.getElementById('confirmation').classList.add('fade-in');
+                    
+                    // Display confirmation message
+                    document.getElementById('confirmation-message').textContent = 
+                        `Thank you, you have opt in for ${selectedPackage}. You will receive an invoice via the email you provided.`;
+                    document.getElementById('expert-code-message').innerHTML = 
+                        `The ID: <span class="highlight">${expertCode}</span>, will receive the selected patch.`;
+                }, 1500);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                // Show error message (in production, handle this better)
+                document.getElementById('loading').classList.add('hidden');
+                document.getElementById('subscription-form').classList.remove('hidden');
+                alert('There was an error submitting your form. Please try again.');
+            });
+        });
+        
+        // Return to form button
+        document.getElementById('back-button').addEventListener('click', function() {
+            // Reset form
+            document.getElementById('patch-form').reset();
+            
+            // Show form and hide confirmation
+            document.getElementById('confirmation').classList.add('hidden');
+            document.getElementById('subscription-form').classList.remove('hidden');
+        });
+        
+        // Expert code validation - simple format check
+        document.getElementById('expert-code').addEventListener('input', function() {
+            const input = this.value;
+            // Optional: Add validation logic here if needed
+            // For example, highlight the field if it matches a specific format
+            if (/^[A-Z]{2}-\d{5}$/i.test(input)) {
+                this.classList.add('border-green-500');
+                this.classList.remove('border-red-500');
+            } else {
+                this.classList.remove('border-green-500');
+                // Only show red if they've started typing something
+                if (input.length > 0) {
+                    this.classList.add('border-red-500');
+                } else {
+                    this.classList.remove('border-red-500');
+                }
+            }
+        });
+        
+        // Package selection interactivity
+        const packageOptions = document.querySelectorAll('.package-option');
+        packageOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                // Find the radio input within this option and check it
+                const radio = this.querySelector('input[type="radio"]');
+                radio.checked = true;
+                
+                // Remove pulse animation from all options
+                packageOptions.forEach(opt => {
+                    opt.classList.remove('pulse');
+                    opt.classList.remove('bg-gray-50');
+                });
+                
+                // Add highlight to selected option
+                this.classList.add('bg-gray-50');
+                
+                // If this is the premium package, add pulse animation
+                if (radio.id === 'premium') {
+                    this.classList.add('pulse');
+                }
+            });
+        });
+        
+        // Modal functionality
+        function setupModal(triggerSelector, modalSelector) {
+            const trigger = document.querySelector(triggerSelector);
+            const modal = document.querySelector(modalSelector);
+            const closeButtons = modal.querySelectorAll('.close-modal');
+            
+            trigger.addEventListener('click', function(e) {
+                e.preventDefault();
+                modal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            });
+            
+            closeButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    modal.classList.add('hidden');
+                    document.body.style.overflow = '';
+                });
+            });
+            
+            // Close modal when clicking outside
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    modal.classList.add('hidden');
+                    document.body.style.overflow = '';
+                }
+            });
+            
+            // Close modal with Escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
+                    modal.classList.add('hidden');
+                    document.body.style.overflow = '';
+                }
+            });
+        }
+        
+        // Setup modals
+        setupModal('#terms-link', '#terms-modal');
+        setupModal('#privacy-link', '#privacy-modal');
+        
+        // Form field animations
+        const formInputs = document.querySelectorAll('.form-input, .form-select');
+        formInputs.forEach(input => {
+            input.addEventListener('focus', function() {
+                this.classList.add('border-gray-500');
+            });
+            
+            input.addEventListener('blur', function() {
+                this.classList.remove('border-gray-500');
+            });
+        });
+        
+        // Add a tooltip for expert code
+        const expertCodeField = document.getElementById('expert-code');
+        const tooltip = document.createElement('div');
+        tooltip.className = 'hidden absolute mt-1 p-2 bg-gray-800 text-white text-xs rounded shadow-lg z-10';
+        tooltip.textContent = 'Enter your unique expert code (e.g., SG-12345) to receive your security patches.';
+        expertCodeField.parentNode.appendChild(tooltip);
+        
+        expertCodeField.addEventListener('focus', function() {
+            tooltip.classList.remove('hidden');
+        });
+        
+        expertCodeField.addEventListener('blur', function() {
+            tooltip.classList.add('hidden');
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98fccd1e32cb421b',t:'MTc2MDY3MjcwNi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
